@@ -30,7 +30,7 @@ def gradientDescent(X, y, theta, alpha, iterations):
 
     for _ in range(0, iterations):
         #derivative = (1/m)*(X.dot(theta)[0] - y).T.dot(X)
-        derivative = alpha * (1/m) * ((X @ theta)[0] - y).T @ X
+        derivative = (1/m) * ((X @ theta)[0] - y).T @ X
         theta = theta[0] - (alpha * derivative)
         J_History.append(cost(X, y, theta))
 
@@ -46,7 +46,7 @@ def main():
     numCols = data.shape[1]
 
     # arbitrary alpha, will update later
-    alpha = 0.05
+    alpha = 0.003
 
     # features are first n-1 cols
     X = data[:,0:numCols-1]
