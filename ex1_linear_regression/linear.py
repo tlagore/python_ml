@@ -68,7 +68,7 @@ def normalEquation(X, y):
 
 def learn(X, y, algType='gradientDescent', iterations=400):
     # arbitrary alpha, update by plotting J(theta)
-    alpha = 0.015
+    alpha = 0.13
     #set up our thetas = 0 for each feature
     theta = np.zeros(X.shape[1])
 
@@ -102,6 +102,12 @@ def main(path):
     # get theta and history of costs - history lets us  
     (theta, J_History) = learn(X, y, algType='gradientDescent', iterations=1500)
     (theta2, J_History) = learn(X, y, algType='normalEquation')
+
+    print("Theta from gradient descent:")
+    print(theta)
+
+    print("Theta from normal equation:")
+    print(theta2)
 
     vals = np.array([[2000, 2], [1000, 3]])
 
