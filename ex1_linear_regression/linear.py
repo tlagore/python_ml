@@ -43,9 +43,42 @@ def normalizeData(data):
     sigma = data.std(axis=0)
     data_norm = np.divide(data-mu, sigma)
 
-    return data_norm
+    return (mu, sigma, data_norm)
 
+def predict(X, theta, mu=None, sigma=None):
+    """ predict values for some number of feature values
 
+        expects that the features are *not* prepended with 1
+    """
+    # if supplied with mu/sigma - normalize
+    if mu is not None and mu.any():
+        X = X - mu
+
+    if sigma is not None and sigma.any():
+        X = np.divide(X, sigma)
+
+    X = np.insert(X, 0, 1, axis=1)
+    predictions = X @ theta
+
+    return predictions
+
+def normalEquation(X, y):
+    """ """
+    return np.linalg.inv(X.T @ X) @ X.T @ y
+
+def learn(X, y, algType='gradientDescent', iterations=400):
+    # arbitrary alpha, update by plotting J(theta)
+    alpha = 0.015
+    #set up our thetas = 0 for each feature
+    theta = np.zeros(X.shape[1])
+
+    if algType == 'gradientDescent':
+        (theta, JHistory) = gradientDescent(X, y, theta, alpha, 250)
+    elif algType == 'normalEquation':
+        (theta, JHistory) = (normalEquation(X,y), None)
+
+    return (theta, JHistory)
+    
 def main(path):
     # get data
     data = np.genfromtxt(path, delimiter=',')
@@ -55,30 +88,39 @@ def main(path):
     numRows = data.shape[0]
     numCols = data.shape[1]
 
-    # arbitrary alpha, will update later
-    alpha = 0.01
-
     # features are first n-1 cols
     X = data[:,0:numCols-1]
-    X = normalizeData(X)
+    (mu, sigma, X) = normalizeData(X)
 
     # prepend a row of 1s for our first feature
     C = np.ones((numRows, 1))
     X = np.append(C, X, axis=1)
 
-    #set up our thetas = 0 for each feature
-    theta = np.zeros((numCols, 1))
-
     # y is last row
     y = data[:,-1]
 
     # get theta and history of costs - history lets us  
-    (theta, J_History) = gradientDescent(X, y, theta, alpha, 5)
-    print(theta)
+    (theta, J_History) = learn(X, y, algType='gradientDescent', iterations=1500)
+    (theta2, J_History) = learn(X, y, algType='normalEquation')
+
+    vals = np.array([[2000, 2], [1000, 3]])
+
+    print("Predicting for feature(s)")
+    print("{0}\n".format(vals))
+
+    predictions = predict(vals, theta, mu, sigma)
+    predictions2 = predict(vals, theta2, mu, sigma)
+
+    vals1 = np.insert(vals, len(vals), predictions, axis=1)
+    vals2 = np.insert(vals, len(vals), predictions2, axis=1)
+
+    print("Prediction, gradient descent:")
+    print(vals1)
+
+    print("Prediction, normal equation:")
+    print(vals2)
 
     exit()
-    plt.plot(J_History)
-    plt.show()
 
 
 if __name__ == "__main__":
