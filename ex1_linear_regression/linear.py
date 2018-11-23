@@ -58,8 +58,10 @@ def predict(X, theta, mu=None, sigma=None):
         X = np.divide(X, sigma)
 
     X = np.insert(X, 0, 1, axis=1)
-    predictions = X @ theta
 
+    theta = theta.reshape(theta.shape[0],1)
+
+    predictions = X @ theta
     return predictions
 
 def normalEquation(X, y):
@@ -109,7 +111,7 @@ def main(path):
     print("Theta from normal equation:")
     print(theta2)
 
-    vals = np.array([[2000, 2], [1000, 3]])
+    vals = np.array([[2000, 2], [1000, 5]])
 
     print("Predicting for feature(s)")
     print("{0}\n".format(vals))
@@ -117,8 +119,8 @@ def main(path):
     predictions = predict(vals, theta, mu, sigma)
     predictions2 = predict(vals, theta2, mu, sigma)
 
-    vals1 = np.insert(vals, len(vals), predictions, axis=1)
-    vals2 = np.insert(vals, len(vals), predictions2, axis=1)
+    vals1 = np.insert(vals, [len(vals)], predictions, axis=1)
+    vals2 = np.insert(vals, [len(vals)], predictions2, axis=1)
 
     print("Prediction, gradient descent:")
     print(vals1)
